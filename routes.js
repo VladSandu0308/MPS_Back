@@ -2,6 +2,8 @@ const router = require('express').Router();
 const {body} = require('express-validator');
 const {register} = require('./controllers/registerController');
 const {login} = require('./controllers/loginController');
+const {createRoom} = require('./controllers/createRoomController')
+const {chooseRoom} = require('./controllers/chooseRoomController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -24,5 +26,14 @@ router.post('/login',[
     .trim().isLength({min: 3}),
     body('password',"The Password must be of minimum 4 characters length").notEmpty().trim().isLength({ min: 4 })
 ],login);
+
+router.post('/createRoom', [
+    body('room_name',"Invalid room_name")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 3})
+], createRoom);
+
+router.post('/chooseRoom',chooseRoom);
 
 module.exports = router;
