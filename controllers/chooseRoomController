@@ -73,6 +73,13 @@ exports.chooseRoom = async(req,res,next) => {
                     req.body.user_id
                 ]);            
 
+            const [row_role_change] = await conn.execute(
+                "UPDATE `users` SET `role`=? WHERE `user_id`=?",[
+                    "Player",
+                    req.body.user_id
+                ]);            
+    
+
             // Change the current users number in the rooms table
             const [row_room_change] = await conn.execute(
                 "UPDATE `rooms` SET `current_users`=? WHERE `room_id`=?",[
@@ -81,16 +88,35 @@ exports.chooseRoom = async(req,res,next) => {
                 ]);            
 
             if ((row_user_change.affectedRows === 1) &&
-                (row_room_change.affectedRows === 1)) {
+                (row_room_change.affectedRows === 1) &&
+                (row_role_change.affectedRows === 1)) {
                     return res.status(201).json({
                         message: "The user has been successfully added into the room.",
                 });
             }
                     
         } else{
-            return res.status(422).json({
-                message: "Too many users"
-            });
+            
+            // Add the room id to the user table
+            const [row_user_change] = await conn.execute(
+                "UPDATE `users` SET `room_id`=? WHERE `user_id`=?",[
+                    row[0].room_id,
+                    req.body.user_id
+                ]);            
+
+            const [row_role_change] = await conn.execute(
+                "UPDATE `users` SET `role`=? WHERE `user_id`=?",[
+                    "Viewer",
+                    req.body.user_id
+                ]);                 
+
+            if ((row_user_change.affectedRows === 1) &&
+                (row_role_change.affectedRows === 1)) {
+                    return res.status(201).json({
+                        message: "The user has been successfully added into the room as a viewer.",
+                });
+            }
+            
         }
 
 

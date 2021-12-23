@@ -4,6 +4,7 @@ const {register} = require('./controllers/registerController');
 const {login} = require('./controllers/loginController');
 const {createRoom} = require('./controllers/createRoomController')
 const {chooseRoom} = require('./controllers/chooseRoomController')
+const {exitRoom} = require('./controllers/exitRoomController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -35,5 +36,7 @@ router.post('/createRoom', [
 ], createRoom);
 
 router.post('/chooseRoom',chooseRoom);
+
+router.post('/exitRoom',exitRoom);
 
 module.exports = router;
