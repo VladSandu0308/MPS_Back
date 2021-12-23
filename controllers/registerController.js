@@ -24,7 +24,7 @@ exports.register = async(req,res,next) => {
 
         const [row2] = await conn.execute(
             "SELECT `username` FROM `users` WHERE `username`=?",
-            [req.body.email]
+            [req.body.username]
           );
 
         if (row2.length > 0) {
