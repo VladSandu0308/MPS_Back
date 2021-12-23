@@ -30,9 +30,7 @@ exports.chooseRoom = async(req,res,next) => {
             pass = "-";
 
         // Verify passwords
-        const passMatch = pass.localeCompare(row[0].password.toLowerCase());
-
-        if(passMatch){
+        if(pass!=row[0].password){
             return res.status(422).json({
                 message: "Incorrect password"
             });
