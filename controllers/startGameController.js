@@ -47,16 +47,26 @@ exports.startGame = async(req,res,next) => {
             });      
         }
       
-        if(req.body.game_name!= null){
-          const [game_name_change] = await conn.execute(
-              "UPDATE `games` SET `game_status`=? WHERE `room_id`=?",[
-                  "In progress",
-                  req.body.room_id
+        const [game_name_change] = await conn.execute(
+            "UPDATE `games` SET `game_status`=? WHERE `room_id`=?",[
+                "In progress",
+                req.body.room_id
           ]);
-        }
-
         
-            
+        // set scores to 0 to users
+        const [user_score_change] = await conn.execute(
+            "UPDATE `users` SET `score`=? WHERE `room_id`=?",[
+                0,
+                req.body.room_id
+            ]);
+
+        // set viewers score in game to 0  
+        const [user_score_change] = await conn.execute(
+            "UPDATE `games` SET `viewers_pts`=? WHERE `room_id`=?",[
+                0,
+                req.body.room_id
+            ]);
+
         return res.status(201).json({
             message: "The game has started.",
         });
