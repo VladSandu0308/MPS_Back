@@ -9,6 +9,8 @@ const {enterGuest} = require('./controllers/enterGuestSessionController')
 const {exitGuest} = require('./controllers/exitGuestSessionController')
 const {getRoomDetails} = require('./controllers/getRoomDetailsController')
 const {changeRoom} = require('./controllers/roomSettingsController')
+const {createGame} = require('./controllers/createGameController')
+const {changeGame} = require('./controllers/changeGameController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -48,6 +50,10 @@ router.post('/enterGuest',enterGuest);
 router.post('/exitGuest',exitGuest);
 
 router.post('/changeRoom',changeRoom);
+
+router.post('/createGame',createGame);
+
+router.post('/changeGame',changeGame);
 
 router.get('/getRoomDetails',getRoomDetails);
 

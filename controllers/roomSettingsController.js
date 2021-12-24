@@ -40,8 +40,8 @@ exports.changeRoom = async(req,res,next) => {
                         req.body.max_users,
                         req.body.room_id
                     ]);
-                }
             }
+        }
             
         var pass;
         if(req.body.type =="PRIVATE"){
