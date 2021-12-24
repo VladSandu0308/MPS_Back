@@ -61,7 +61,7 @@ exports.startGame = async(req,res,next) => {
             ]);
 
         // set viewers score in game to 0  
-        const [user_score_change] = await conn.execute(
+        const [user_game_change] = await conn.execute(
             "UPDATE `games` SET `viewers_pts`=? WHERE `room_id`=?",[
                 0,
                 req.body.room_id

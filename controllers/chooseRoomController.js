@@ -79,6 +79,24 @@ exports.chooseRoom = async(req,res,next) => {
                     req.body.user_id
                 ]);            
     
+            const [game_row] = await conn.execute(
+                "SELECT * FROM `games` WHERE `room_id`=?",
+                [row[0].room_id]
+            );
+        
+            if (game_row.length === 0) {
+                return res.status(201).json({
+                message: "The game doesn't exist",
+                });
+            }
+    
+            player_no = game_row[0].players_nr + 1;
+    
+            const [game_viewer_change] = await conn.execute(
+                "UPDATE `games` SET `players_nr`=? WHERE `room_id`=?",[
+                    player_no,
+                    row[0].room_id
+            ]);
 
             // Change the current users number in the rooms table
             const [row_room_change] = await conn.execute(
@@ -109,6 +127,27 @@ exports.chooseRoom = async(req,res,next) => {
                     "Viewer",
                     req.body.user_id
                 ]);                 
+
+            // add viewer to the game
+            const [game_row] = await conn.execute(
+                "SELECT * FROM `games` WHERE `room_id`=?",
+                [row[0].room_id]
+              );
+    
+            if (game_row.length === 0) {
+                return res.status(201).json({
+                    message: "The game doesn't exist",
+                });
+            }
+
+            viewer_no = game_row[0].viewers_nr + 1;
+
+            const [game_viewer_change] = await conn.execute(
+                "UPDATE `games` SET `viewers_nr`=? WHERE `room_id`=?",[
+                    viewer_no,
+                    row[0].room_id
+              ]);
+
 
             if ((row_user_change.affectedRows === 1) &&
                 (row_role_change.affectedRows === 1)) {

@@ -92,13 +92,14 @@ exports.createRoom = async(req,res,next) => {
         var joc = "Game"
 
         // Insert game into table
-        const [rows_game] = await conn.execute('INSERT INTO `games`(`game_name`,`game_status`,`viewers_nr`,`viewers_pts`,`room_id`,`max_players`,`players_nr`) VALUES(?,?,?,?,?,?,?)',[
+        const [rows_game] = await conn.execute('INSERT INTO `games`(`game_name`,`game_status`,`viewers_nr`,`viewers_pts`,`room_id`,`max_players`,`players_nr`,`rounds`) VALUES(?,?,?,?,?,?,?,?)',[
             joc,
             "Created",
             0,
             0,
             row_curr[0].room_id,
             req.body.max_users,
+            1,
             1
         ]);
 

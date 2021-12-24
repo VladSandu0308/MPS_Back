@@ -2,7 +2,7 @@ const {validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
 const conn = require('../dbConnection').promise();
 
-exports.endGame = async(req,res,next) => {
+exports.nextRound = async(req,res,next) => {
 
     try{
         const [row] = await conn.execute(
@@ -45,12 +45,18 @@ exports.endGame = async(req,res,next) => {
                 message: "The user isn't the admin of the room",
             });      
         }
-      
+   
+        const [row_get_game] = await conn.execute(
+            "SELECT * FROM `games` WHERE `room_id`=?",
+            req.body.room_id
+          );
+
+        var roundz = row_get_game[0].rounds +1;
+
         const [game_name_change] = await conn.execute(
-            "UPDATE `games` SET `game_status`=?,`rounds`=?,`viewers_pts`=? WHERE `room_id`=?",[
-                "In lobby",
-                0,
-                0,
+            "UPDATE `games` SET `game_status`=?,`rounds`=? WHERE `room_id`=?",[
+                "In progress",
+                roundz,
                 req.body.room_id
           ]);
         
@@ -61,6 +67,9 @@ exports.endGame = async(req,res,next) => {
             [req.body.room_id]
           );
        
+        
+        var viewers_points = row_get_game[0].viewers_pts;
+
         for (var i = 0; i< row_all_users.length; i++){
 
             if(row_all_users[i].room_id ==req.body.room_id ){
@@ -68,10 +77,14 @@ exports.endGame = async(req,res,next) => {
                 const [row_get_score] = await conn.execute(
                     "SELECT * FROM `users` WHERE `user_id`=?",
                     row_all_users[i].user_id
-                  );
+                );
                
                 if((row_get_score[0].score>=0)&&
                     (row_get_score[0].total_score>=0)){
+
+                    if(row_get_score[0].role=="Viewer"){
+                        viewers_points += row_get_score[0].score;
+                    }  
 
                     var scor_after = row_get_score[0].total_score +row_get_score[0].score ;
 
@@ -81,13 +94,21 @@ exports.endGame = async(req,res,next) => {
                             0,
                             row_all_users[i].user_id
                         ]);
+
+
                 }        
             }
 
         }
 
+        const [user_game_final] = await conn.execute(
+            "UPDATE `games` SET `viewers_pts`=? WHERE `room_id`=?",[
+                viewers_points,
+                req.body.room_id
+            ]);
+
         return res.status(201).json({
-            message: "The game has ended.",
+            message: "The next round started.",
         });
         
         
