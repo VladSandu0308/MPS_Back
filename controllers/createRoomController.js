@@ -76,10 +76,36 @@ exports.createRoom = async(req,res,next) => {
                 req.body.admin_id
             ]);           
 
-        if ((row_user_change.affectedRows === 1)&&
-            (row_role_change.affectedRows === 1)) {
+        // Check if already existing game in room - 1 room 1 game
+        const [row_game] = await conn.execute(
+            "SELECT * FROM `games` WHERE `room_id`=?",
+            [row_curr[0].room_id]
+        );
+
+        if (row_game.length > 0) {
             return res.status(201).json({
-                message: "The roomid has been successfully updated.",
+                message: "The game already exists",
+            });
+        }
+
+        // Hardcoded cause we only have one game
+        var joc = "Game"
+
+        // Insert game into table
+        const [rows_game] = await conn.execute('INSERT INTO `games`(`game_name`,`game_status`,`viewers_nr`,`viewers_pts`,`room_id`,`max_players`,`players_nr`) VALUES(?,?,?,?,?,?,?)',[
+            joc,
+            "Created",
+            0,
+            0,
+            row_curr[0].room_id,
+            req.body.max_users,
+            1
+        ]);
+
+        if ((row_user_change.affectedRows === 1)&&
+            (rows_game.affectedRows === 1)) {
+            return res.status(201).json({
+                message: "The room has been successfully created.",
             });
         }
         

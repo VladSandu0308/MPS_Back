@@ -6,11 +6,11 @@ const {createRoom} = require('./controllers/createRoomController')
 const {chooseRoom} = require('./controllers/chooseRoomController')
 const {exitRoom} = require('./controllers/exitRoomController')
 const {enterGuest} = require('./controllers/enterGuestSessionController')
-const {exitGuest} = require('./controllers/exitGuestSessionController')
 const {getRoomDetails} = require('./controllers/getRoomDetailsController')
 const {changeRoom} = require('./controllers/roomSettingsController')
-const {createGame} = require('./controllers/createGameController')
 const {changeGame} = require('./controllers/changeGameController')
+const {startGame} = require('./controllers/startGameController')
+const {endGame} = require('./controllers/endGameController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -41,19 +41,28 @@ router.post('/createRoom', [
     .trim().isLength({min: 3})
 ], createRoom);
 
-router.post('/chooseRoom',chooseRoom);
+router.post('/chooseRoom', [
+    body('type',"Invalid type")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 3}),
+    body('room_name',"Invalid room name")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 3})
+],chooseRoom);
 
 router.post('/exitRoom',exitRoom);
 
 router.post('/enterGuest',enterGuest);
 
-router.post('/exitGuest',exitGuest);
-
 router.post('/changeRoom',changeRoom);
 
-router.post('/createGame',createGame);
-
 router.post('/changeGame',changeGame);
+
+router.post('/endGame',endGame);
+
+router.post('/startGame',startGame);
 
 router.get('/getRoomDetails',getRoomDetails);
 
