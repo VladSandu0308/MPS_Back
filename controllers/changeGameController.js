@@ -29,6 +29,18 @@ exports.changeGame = async(req,res,next) => {
             [req.body.admin_id]
           );
 
+        // Check if already existing room
+        const [room_row] = await conn.execute(
+            "SELECT * FROM `rooms` WHERE `room_id`=?",
+            [req.body.room_id]
+          );
+
+        if (req.body.admin_id != room_row[0].admin_id) {
+            return res.status(201).json({
+                message: "The user isn't the room's admin",
+            });
+        }
+
         if (row_users.length ==0  ) {
             return res.status(201).json({
                 message: "The user isn't the admin of the room",
@@ -49,20 +61,19 @@ exports.changeGame = async(req,res,next) => {
           ]);
         }
 
-        if(req.body.game_status!= null){
-            const [game_status_change] = await conn.execute(
-                "UPDATE `games` SET `game_status`=? WHERE `room_id`=?",[
-                  req.body.game_status,
-                  req.body.room_id
-          ]);
-        }
+        const [row_room] = await conn.execute(
+            "SELECT * FROM `rooms` WHERE `room_id`=?",
+            [row_users[0].room_id]
+        );
 
         if(req.body.max_players != null){
-            const [game_max] = await conn.execute(
-                "UPDATE `games` SET `max_players`=? WHERE `room_id`=?",[
-                  req.body.max_players,
-                  req.body.room_id
-          ]);
+            if(req.body.max_players<= row_room[0].max_users){
+                const [game_max] = await conn.execute(
+                    "UPDATE `games` SET `max_players`=? WHERE `room_id`=?",[
+                    req.body.max_players,
+                    req.body.room_id
+                ]);
+            }
         }
             
         return res.status(201).json({

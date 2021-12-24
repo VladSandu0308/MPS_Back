@@ -1,5 +1,6 @@
 const {validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
+const e = require('express');
 const conn = require('../dbConnection').promise();
 
 exports.exitRoom = async(req,res,next) => {
@@ -55,12 +56,19 @@ exports.exitRoom = async(req,res,next) => {
         );
     
         if (row_role[0].role == "Viewer" ) {
-            const [row_user_change] = await conn.execute(
-                "UPDATE `users` SET `room_id`=?,`role`=? WHERE `user_id`=?",[
-                    -1,
-                    'NONE',
+
+            if(row_role[0].email=="guest@yahoo.com"){
+                const [delete_user] = await conn.execute(
+                    "DELETE FROM `users` WHERE `user_id`=?",[
                     req.body.user_id
-                ]);    
+                ]);  
+        
+                if (delete_user.affectedRows === 1) {
+                    return res.status(201).json({
+                        message: "The user has been successfully deleted.",
+                    });
+                }        
+            }
 
             return res.status(201).json({
                 message: "Viewer exited room",
@@ -73,14 +81,28 @@ exports.exitRoom = async(req,res,next) => {
 
         if(users > 1){
 
-            // Remove room id to the user table
-            const [row_user_change] = await conn.execute(
-                "UPDATE `users` SET `room_id`=?,`role`=? WHERE `user_id`=?",[
-                    -1,
-                    'NONE',
+
+            if(row_role[0].email=="guest@yahoo.com"){
+                const [delete_user] = await conn.execute(
+                    "DELETE FROM `users` WHERE `user_id`=?",[
                     req.body.user_id
-                ]);            
-                
+                ]);  
+        
+                if (delete_user.affectedRows === 1) {
+                    return res.status(201).json({
+                        message: "The user has been successfully deleted.",
+                    });
+                }        
+            } else{
+                // Remove room id to the user table
+                const [row_user_change] = await conn.execute(
+                    "UPDATE `users` SET `room_id`=?,`role`=? WHERE `user_id`=?",[
+                        -1,
+                        'NONE',
+                        req.body.user_id
+                    ]);            
+            }
+
             // Get users from room    
             const [row_users] = await conn.execute(
                 "SELECT * FROM `users` WHERE `room_id`=? and `user_id`!=? and `role`=?  LIMIT 1",[
@@ -88,14 +110,7 @@ exports.exitRoom = async(req,res,next) => {
                     req.body.user_id,
                     "Player"
                 ]);            
-    
-            // Make another user admin of the room
-            const [row_user_makeadmin] = await conn.execute(
-                "UPDATE `rooms` SET `admin_id`=? WHERE `room_id`=?",[
-                    row_users[0].user_id,
-                    req.body.room_id
-                ]);            
-        
+            
             // Get room row
             const [row_room] = await conn.execute(
                 "SELECT * FROM `rooms` WHERE `room_id`=?",
@@ -108,6 +123,16 @@ exports.exitRoom = async(req,res,next) => {
                 });
             }   
 
+            if(row_room[0].admin_id ==req.body.user_id){
+                // Make another user admin of the room
+                const [row_user_makeadmin] = await conn.execute(
+                    "UPDATE `rooms` SET `admin_id`=? WHERE `room_id`=?",[
+                        row_users[0].user_id,
+                        req.body.room_id
+                    ]);            
+            }
+
+            
             // If there are no viewers 
             if(users == players){
                 const [row_room_change] = await conn.execute(
@@ -146,17 +171,29 @@ exports.exitRoom = async(req,res,next) => {
                     req.body.user_id
                 ]);            
 
-            const [row_role_change] = await conn.execute(
-                "UPDATE `users` SET `role`=?,`room_id`=? WHERE `user_id`=?",[
-                    "NONE",
-                    -1,
+            if(row_role[0].email=="guest@yahoo.com"){
+                const [delete_user] = await conn.execute(
+                    "DELETE FROM `users` WHERE `user_id`=?",[
                     req.body.user_id
-                ]);   
+                ]);  
+            
+                if (delete_user.affectedRows === 1) {
+                    return res.status(201).json({
+                        message: "The user has been successfully deleted.",
+                    });
+                }        
+            } else{
+                const [row_role_change] = await conn.execute(
+                    "UPDATE `users` SET `role`=?,`room_id`=? WHERE `user_id`=?",[
+                        "NONE",
+                        -1,
+                        req.body.user_id
+                    ]);   
 
-            return res.status(201).json({
-                    message: "The user has been successfully removed from the room and the room has been deleted.",
-            });
-
+                return res.status(201).json({
+                        message: "The user has been successfully removed from the room and the room has been deleted.",
+                });
+            }
         }
 
         
