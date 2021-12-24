@@ -44,17 +44,31 @@ exports.getRoomDetails = async (req,res,next) => {
             const [game] = await conn.execute('SELECT * FROM `games` where `room_id`=?'
                 ,[rows[i].room_id]);
 
-            result.push({
-                room_name:rows_room[0].room_name,
-                type:rows_room[0].type,
-                admin_name:admin.username,
-                user_number:rows_room[0].current_users,
-                user_list:user_array,
-                // game_name:game[0].game_name,
-                // game_status:game[0].game_status,
-                viewers_nr:rows_users.length,
-                viewers_pts:viewerspts[0].viewer_points
-            });
+            if(game.length > 0){
+                result.push({
+                    room_name:rows_room[0].room_name,
+                    type:rows_room[0].type,
+                    admin_name:admin.username,
+                    user_number:rows_room[0].current_users,
+                    user_list:user_array,
+                    game_name:game[0].game_name,
+                    game_status:game[0].game_status,
+                    viewers_nr:rows_users.length,
+                    viewers_pts:viewerspts[0].viewer_points
+                });
+            } else{
+                result.push({
+                    room_name:rows_room[0].room_name,
+                    type:rows_room[0].type,
+                    admin_name:admin.username,
+                    user_number:rows_room[0].current_users,
+                    user_list:user_array,
+                    game_name:"No game in progress",
+                    game_status:"-",
+                    viewers_nr:rows_users.length,
+                    viewers_pts:viewerspts[0].viewer_points
+                });                
+            }
         }
 
         res.contentType('application/json');
