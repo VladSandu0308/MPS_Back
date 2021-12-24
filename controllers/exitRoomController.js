@@ -171,6 +171,12 @@ exports.exitRoom = async(req,res,next) => {
                     req.body.user_id
                 ]);            
 
+            // The last user, the room closes
+            const [game_delete] = await conn.execute(
+                "DELETE FROM `games` WHERE `room_id`=?",[
+                    req.body.room_id
+                ]);            
+
             if(row_role[0].email=="guest@yahoo.com"){
                 const [delete_user] = await conn.execute(
                     "DELETE FROM `users` WHERE `user_id`=?",[
