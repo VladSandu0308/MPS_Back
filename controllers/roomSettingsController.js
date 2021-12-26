@@ -17,7 +17,7 @@ exports.changeRoom = async(req,res,next) => {
             [req.body.room_id]
           );
 
-        if (req.body.user_id != row[0].admin_id) {
+        if (req.body.admin_id != row[0].admin_id) {
             return res.status(201).json({
                 message: "The user isn't the room's admin",
             });

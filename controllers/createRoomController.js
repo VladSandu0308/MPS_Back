@@ -47,6 +47,12 @@ exports.createRoom = async(req,res,next) => {
         if(req.body.type =="PUBLIC")
             pass = "-";
 
+        var numberofusers =0;
+        if(req.body.max_users == null)
+            numberofusers = 1;
+        else 
+            numberofusers =req.body.max_users;
+
         // Insert room into table
         const [rows] = await conn.execute('INSERT INTO `rooms`(`room_name`,`type`,`password`,`admin_id`,`current_users`,`max_users`) VALUES(?,?,?,?,?,?)',[
             req.body.room_name,
@@ -54,7 +60,7 @@ exports.createRoom = async(req,res,next) => {
             pass,
             req.body.admin_id,
             1,
-            req.body.max_users
+            numberofusers
         ]);
             
         // Get current room row
@@ -91,6 +97,8 @@ exports.createRoom = async(req,res,next) => {
         // Hardcoded cause we only have one game
         var joc = "Game"
 
+
+
         // Insert game into table
         const [rows_game] = await conn.execute('INSERT INTO `games`(`game_name`,`game_status`,`viewers_nr`,`viewers_pts`,`room_id`,`max_players`,`players_nr`,`rounds`) VALUES(?,?,?,?,?,?,?,?)',[
             joc,
@@ -98,7 +106,7 @@ exports.createRoom = async(req,res,next) => {
             0,
             0,
             row_curr[0].room_id,
-            req.body.max_users,
+            numberofusers,
             1,
             1
         ]);

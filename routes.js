@@ -26,7 +26,6 @@ router.post('/register', [
     body('password',"The Password must be of minimum 4 characters length").notEmpty().trim().isLength({ min: 4 })
 ], register);
 
-
 router.post('/login',[
     body('username',"Invalid username")
     .notEmpty()
@@ -39,7 +38,15 @@ router.post('/createRoom', [
     body('room_name',"Invalid room_name")
     .notEmpty()
     .escape()
-    .trim().isLength({min: 3})
+    .trim().isLength({min: 3}),
+    body('type',"Invalid type")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 3}),
+    body('admin_id',"Invalid admin id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
 ], createRoom);
 
 router.post('/chooseRoom', [
@@ -75,7 +82,7 @@ router.post('/changeRoom',[
     .notEmpty()
     .escape()
     .trim().isLength({min: 1}),
-    body('user_id',"Enter a user_id")
+    body('admin_id',"Enter an admin id")
     .notEmpty()
     .escape()
     .trim().isLength({min: 1})
@@ -86,7 +93,7 @@ router.post('/changeGame',[
     .notEmpty()
     .escape()
     .trim().isLength({min: 1}),
-    body('admin_id',"Enter a user_id")
+    body('admin_id',"Enter an admin_id")
     .notEmpty()
     .escape()
     .trim().isLength({min: 1})
@@ -97,7 +104,7 @@ router.post('/endGame',[
     .notEmpty()
     .escape()
     .trim().isLength({min: 1}),
-    body('admin_id',"Enter a user_id")
+    body('admin_id',"Enter an admin_id")
     .notEmpty()
     .escape()
     .trim().isLength({min: 1})
@@ -108,13 +115,22 @@ router.post('/startGame',[
     .notEmpty()
     .escape()
     .trim().isLength({min: 1}),
-    body('admin_id',"Enter a user_id")
+    body('admin_id',"Enter an admin_id")
     .notEmpty()
     .escape()
     .trim().isLength({min: 1})
 ],startGame);
 
-router.post('/nextRound',nextRound);
+router.post('/nextRound',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],nextRound);
 
 router.get('/getRoomDetails',getRoomDetails);
 

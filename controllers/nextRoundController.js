@@ -19,7 +19,7 @@ exports.nextRound = async(req,res,next) => {
         // Get admin/user row
         const [row_users] = await conn.execute(
             "SELECT * FROM `users` WHERE `user_id`=?",
-            [req.body.user_id]
+            [req.body.admin_id]
           );
 
         if (row_users[0].room_id == -1 ) {
@@ -40,7 +40,7 @@ exports.nextRound = async(req,res,next) => {
             });
         }   
 
-        if(row_room[0].admin_id !=req.body.user_id){
+        if(row_room[0].admin_id !=req.body.admin_id){
             return res.status(201).json({
                 message: "The user isn't the admin of the room",
             });      
