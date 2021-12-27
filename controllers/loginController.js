@@ -13,6 +13,7 @@ exports.login = async (req,res,next) =>{
 
     try{
 
+        // Search for the user into the database by the username
         const [row] = await conn.execute(
             "SELECT * FROM `users` WHERE `username`=?",
             [req.body.username]
@@ -24,6 +25,7 @@ exports.login = async (req,res,next) =>{
             });
         }
 
+        // Check the given password with the already encrypted one from the database
         const passMatch = await bcrypt.compare(req.body.password, row[0].password);
         
         if(!passMatch){
@@ -32,8 +34,10 @@ exports.login = async (req,res,next) =>{
             });
         }
         
+        // Get token
         const theToken = jwt.sign({user_id:row[0].user_id},'super-secret',{ expiresIn: '1h' });
         
+        // Return the token, email, id and username of the user
         return res.json({
             token:theToken,
             email:req.body.email,

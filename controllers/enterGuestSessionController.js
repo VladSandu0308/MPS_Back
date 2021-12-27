@@ -4,6 +4,7 @@ const conn = require('../dbConnection').promise();
 
 exports.enterGuest = async(req,res,next) => {
     try{
+        
         guestemail = "guest@yahoo.com";
         randomusername = Math.random().toString(36).substring(2,8);
         randompass = Math.random().toString(36).substring(2,9);
