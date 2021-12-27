@@ -11,6 +11,7 @@ const {changeRoom} = require('./controllers/roomSettingsController')
 const {changeGame} = require('./controllers/changeGameController')
 const {startGame} = require('./controllers/startGameController')
 const {endGame} = require('./controllers/endGameController')
+const {nextRound} = require('./controllers/nextRoundController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -25,7 +26,6 @@ router.post('/register', [
     body('password',"The Password must be of minimum 4 characters length").notEmpty().trim().isLength({ min: 4 })
 ], register);
 
-
 router.post('/login',[
     body('username',"Invalid username")
     .notEmpty()
@@ -38,7 +38,15 @@ router.post('/createRoom', [
     body('room_name',"Invalid room_name")
     .notEmpty()
     .escape()
-    .trim().isLength({min: 3})
+    .trim().isLength({min: 3}),
+    body('type',"Invalid type")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 3}),
+    body('admin_id',"Invalid admin id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
 ], createRoom);
 
 router.post('/chooseRoom', [
@@ -49,20 +57,80 @@ router.post('/chooseRoom', [
     body('room_name',"Invalid room name")
     .notEmpty()
     .escape()
-    .trim().isLength({min: 3})
+    .trim().isLength({min: 3}),    
+    body('user_id',"No user id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
 ],chooseRoom);
 
-router.post('/exitRoom',exitRoom);
+router.post('/exitRoom',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('user_id',"Enter a user_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],exitRoom);
 
 router.post('/enterGuest',enterGuest);
 
-router.post('/changeRoom',changeRoom);
+router.post('/changeRoom',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],changeRoom);
 
-router.post('/changeGame',changeGame);
+router.post('/changeGame',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],changeGame);
 
-router.post('/endGame',endGame);
+router.post('/endGame',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],endGame);
 
-router.post('/startGame',startGame);
+router.post('/startGame',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],startGame);
+
+router.post('/nextRound',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+    body('admin_id',"Enter an admin_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1})
+],nextRound);
 
 router.get('/getRoomDetails',getRoomDetails);
 
