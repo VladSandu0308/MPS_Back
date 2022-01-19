@@ -90,7 +90,8 @@ exports.getRoomDetails = async (req,res,next) => {
                     game_status:game[0].game_status,
                     viewers_nr:rows_users.length,
                     viewers_pts:viewerspts[0].viewer_points,
-                    room_id: rows_room[0].room_id
+                    room_id: rows_room[0].room_id,
+                    max_players:game[0].max_players 
                 });
             } else{
                 // Case for more games and if the game isn't made at the same time

@@ -62,7 +62,7 @@ exports.createRoom = async(req,res,next) => {
         // If there isn't a max number of users set, the default is one
         var numberofusers = 0;
         if(req.body.max_users == null)
-            numberofusers = 1;
+            numberofusers = 5;
         else 
             numberofusers = req.body.max_users;
 
