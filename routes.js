@@ -12,6 +12,7 @@ const {changeGame} = require('./controllers/changeGameController')
 const {startGame} = require('./controllers/startGameController')
 const {endGame} = require('./controllers/endGameController')
 const {nextRound} = require('./controllers/nextRoundController')
+const {getRoom} = require('./controllers/getOneRoomController')
 
 router.post('/register', [
     body('username',"The name must be of minimum 3 characters length")
@@ -131,6 +132,13 @@ router.post('/nextRound',[
     .escape()
     .trim().isLength({min: 1})
 ],nextRound);
+
+router.post('/getRoom',[
+    body('room_id',"Enter a room_id")
+    .notEmpty()
+    .escape()
+    .trim().isLength({min: 1}),
+],getRoom);
 
 router.get('/getRoomDetails',getRoomDetails);
 

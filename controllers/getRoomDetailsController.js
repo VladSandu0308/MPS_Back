@@ -105,7 +105,8 @@ exports.getRoomDetails = async (req,res,next) => {
                     game_name:"No game in progress",
                     game_status:"-",
                     viewers_nr:rows_users.length,
-                    viewers_pts:viewerspts[0].viewer_points
+                    viewers_pts:viewerspts[0].viewer_points,
+                    max_players:game[0].max_players 
                 });                
             }
         }
