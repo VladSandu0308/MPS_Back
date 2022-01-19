@@ -78,7 +78,6 @@ exports.getRoomDetails = async (req,res,next) => {
             const [game] = await conn.execute('SELECT * FROM `games` where `room_id`=?',[
                 rows[i].room_id
             ]);
-
             if(game.length > 0){
                 // Insert the room's details  
                 result.push({
@@ -90,7 +89,8 @@ exports.getRoomDetails = async (req,res,next) => {
                     game_name:game[0].game_name,
                     game_status:game[0].game_status,
                     viewers_nr:rows_users.length,
-                    viewers_pts:viewerspts[0].viewer_points
+                    viewers_pts:viewerspts[0].viewer_points,
+                    room_id: rows_room[0].room_id
                 });
             } else{
                 // Case for more games and if the game isn't made at the same time
