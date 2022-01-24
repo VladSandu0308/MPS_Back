@@ -152,10 +152,16 @@ exports.createRoom = async(req,res,next) => {
             0
         ]);
 
+        const [room_id] = await conn.execute(
+            "SELECT * FROM `rooms` WHERE `room_name`=?",
+            [req.body.room_name]
+        );
+
         // Check if the game was created
         if (rows_game.affectedRows === 1) {
             return res.status(201).json({
                 message: "The room has been successfully created.",
+                room_id: room_id[0].room_id
             });
         } else{
             return res.status(422).json({

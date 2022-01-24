@@ -135,7 +135,8 @@ exports.chooseRoom = async(req,res,next) => {
                 (row_room_change.affectedRows === 1)) {
                     return res.status(201).json({
                         message: "The user has been successfully added into the room.",
-                });
+                        room_id: row[0].room_id
+                    });
             }
                     
         } else{
@@ -190,6 +191,7 @@ exports.chooseRoom = async(req,res,next) => {
             if (game_viewer_change.affectedRows === 1) {
                     return res.status(201).json({
                         message: "The user has been successfully added into the room and game as a viewer.",
+                        room_id: row[0].room_id
                 });
             }
         }

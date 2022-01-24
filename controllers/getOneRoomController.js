@@ -81,6 +81,7 @@ exports.getRoom = async (req,res,next) => {
                 room_name:rows_room[0].room_name,
                 type:rows_room[0].type,
                 admin_name:admin.username,
+                admin_id: rows_room[0].admin_id,
                 user_number:rows_room[0].current_users,
                 user_list:user_array,
                 game_name:game[0].game_name,

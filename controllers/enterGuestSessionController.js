@@ -18,10 +18,14 @@ exports.enterGuest = async(req,res,next) => {
             0,
             0
         ]);
-
+        
         if (rows.affectedRows === 1) {
             return res.status(201).json({
                 message: "The user has been successfully inserted.",
+                token:123456789,
+                email:guestemail,
+                username: randomusername,
+                user_id: rows?.insertId
             });
         }
         
