@@ -80,8 +80,6 @@ exports.getRoomDetails = async (req,res,next) => {
                 rows[i].room_id
             ]);
 
-            console.log("MAMAAA");
-            console.log("mama masii" + admin[0].username);
             if(game.length > 0){
                 // Insert the room's details  
                 result.push({
