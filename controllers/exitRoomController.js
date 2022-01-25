@@ -11,7 +11,7 @@ exports.exitRoom = async(req,res,next) => {
     }
 
     try{
-
+        console.log(req.body);
         // Check if the user is already in a room and the right room
         const [row_users] = await conn.execute(
             "SELECT * FROM `users` WHERE `user_id`=?",
@@ -143,6 +143,8 @@ exports.exitRoom = async(req,res,next) => {
                         message: "The user wasn't successfully deleted.",
                     });
                 }
+
+                
                 
             } else {    // If the player wasn't a guest account
 

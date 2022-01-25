@@ -48,7 +48,7 @@ exports.startGame = async(req,res,next) => {
         if(row_room[0].admin_id !=req.body.admin_id){
             return res.status(422).json({
                 message: "The user isn't the admin of the room",
-            });      
+            });
         }
       
         // Updates the game status
@@ -72,6 +72,14 @@ exports.startGame = async(req,res,next) => {
                 req.body.room_id
             ]);
 
+        var randomNumber = Math.floor(Math.random() * 101);
+
+        const [get_random] = await conn.execute(
+            "UPDATE `games` SET `number`=? WHERE `room_id`=?",[
+                randomNumber,
+                req.body.room_id
+            ]);
+
         // Check if the fields were updated
         if ((game_name_change.affectedRows >= 1)&&
             (user_score_change.affectedRows >= 1)&&
@@ -86,3 +94,13 @@ exports.startGame = async(req,res,next) => {
         next(err);
     }
 }
+
+/** 
+ * playGameController ->
+ *  - genereaza un numar la intamplare si il trimite la toti jucatorii care au roomId = this.roomId (cand primeste numaru
+ * se da start la un timer)
+ *  - logica de joc se face in front
+ *  - cand termina un jucator de citit trimite timpu care i-a luat
+ *  - busy waiting pana a primit toti timpii de la jucatori
+ *  - dupa ce i a primit face clasamentul si updateaza scorurile
+*/

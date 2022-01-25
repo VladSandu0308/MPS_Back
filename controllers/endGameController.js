@@ -5,6 +5,8 @@ const conn = require('../dbConnection').promise();
 exports.endGame = async(req,res,next) => {
 
     try{
+
+        var viewer = 0;
         // Check for the game
         const [row] = await conn.execute(
             "SELECT * FROM `games` WHERE `room_id`=?",
@@ -59,24 +61,9 @@ exports.endGame = async(req,res,next) => {
                 message: "The user isn't the admin of the room",
             });      
         }
-      
-        // Update the game status
-        const [game_name_change] = await conn.execute(
-            "UPDATE `games` SET `game_status`=?,`rounds`=?,`viewers_pts`=? WHERE `room_id`=?",[
-                "In lobby",
-                0,
-                0,
-                req.body.room_id
-          ]);
-        
-        if (game_name_change.affectedRows != 1) {
-            return res.status(422).json({
-                message: "The game wasn't successfully ended.",
-            });
-        }
 
         // Get all users
-           const [row_all_users] = await conn.execute(
+        const [row_all_users] = await conn.execute(
             "SELECT * FROM `users` WHERE `room_id`=?",
             [req.body.room_id]
           );
@@ -88,27 +75,43 @@ exports.endGame = async(req,res,next) => {
         }
 
         // Iterating through users, updates their scores
-        for (var i = 0; i< row_all_users.length; i++){               
-            if((row_all_users[i].score>=0)&&
-                (row_all_users[i].total_score>=0)){
+        for (var i = 0; i< row_all_users.length; i++){        
+            if (row_all_users[i].user_id == req.body.user_id) {
+                if (row_all_users[i].role === "Viewer") {
+                    viewer = 1;
+                }
+                const [user_score_change] = await conn.execute(
+                    "UPDATE `users` SET `total_score`=?,`score`=? WHERE `user_id`=?",[
+                        row_all_users[i].total_score + 1,
+                        row_all_users[i].score + 1,
+                        row_all_users[i].user_id
+                    ]);
 
-                    var scor_after = row_all_users[i].total_score +row_all_users[i].score ;
-
-                    const [user_score_change] = await conn.execute(
-                        "UPDATE `users` SET `total_score`=?,`score`=? WHERE `user_id`=?",[
-                            scor_after,
-                            0,
-                            row_all_users[i].user_id
-                        ]);
-
-                        if (user_score_change.affectedRows != 1) {
-                            return res.status(422).json({
-                                message: "The score wasn't successfully modified.",
-                            });
-                        }
-                                
-            }        
+                    if (user_score_change.affectedRows != 1) {
+                        return res.status(422).json({
+                            message: "The score wasn't successfully modified.",
+                        });
+                    }
+            }       
         }
+      
+        // Update the game status
+        if (!viewer) {
+            const [game_name_change] = await conn.execute(
+                "UPDATE `games` SET `game_status`=?,`rounds`=?,`viewers_pts`=? WHERE `room_id`=?",[
+                    "In lobby",
+                    0,
+                    0,
+                    req.body.room_id
+              ]);
+            
+            if (game_name_change.affectedRows != 1) {
+                return res.status(422).json({
+                    message: "The game wasn't successfully ended.",
+                });
+            }
+        }
+             
 
         return res.status(201).json({
             message: "The game has ended and the scores were updated.",

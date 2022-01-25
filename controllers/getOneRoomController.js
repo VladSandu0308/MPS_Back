@@ -49,7 +49,8 @@ exports.getRoom = async (req,res,next) => {
         for (var j = 0;j<rows_players.length ; j++){
             user_array.push({
                 user_name:rows_players[j].username,
-                user_score:rows_players[j].score
+                user_id: rows_players[j].user_id,
+                user_score:rows_players[j].total_score
             })
         }
             
@@ -65,7 +66,7 @@ exports.getRoom = async (req,res,next) => {
         }
 
         // Calculate viewers' points
-        const [viewerspts] = await conn.execute('SELECT SUM(score) as viewer_points FROM `users` where `room_id`=? and `role`=?',[
+        const [viewerspts] = await conn.execute('SELECT SUM(total_score) as viewer_points FROM `users` where `room_id`=? and `role`=?',[
             rows[0].room_id,
             "Viewer"
         ]);
@@ -80,12 +81,13 @@ exports.getRoom = async (req,res,next) => {
             result = {
                 room_name:rows_room[0].room_name,
                 type:rows_room[0].type,
-                admin_name:admin.username,
+                admin_name:admin[0].username,
                 admin_id: rows_room[0].admin_id,
                 user_number:rows_room[0].current_users,
                 user_list:user_array,
                 game_name:game[0].game_name,
                 game_status:game[0].game_status,
+                number: game[0].number,
                 viewers_nr:rows_users.length,
                 viewers_pts:viewerspts[0].viewer_points,
                 max_players:game[0].max_players,

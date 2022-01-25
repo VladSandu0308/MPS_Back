@@ -57,6 +57,7 @@ exports.getRoomDetails = async (req,res,next) => {
                 })
             }
             
+            console.log("mama masii" + rows_room[0].admin_id);
             // Get the admin's details
             const [admin] = await conn.execute('SELECT * FROM `users` where `user_id`=?',[
                 rows_room[0].admin_id
@@ -69,7 +70,7 @@ exports.getRoomDetails = async (req,res,next) => {
             }
 
             // Calculate viewers' points
-            const [viewerspts] = await conn.execute('SELECT SUM(score) as viewer_points FROM `users` where `room_id`=? and `role`=?',[
+            const [viewerspts] = await conn.execute('SELECT SUM(total_score) as viewer_points FROM `users` where `room_id`=? and `role`=?',[
                 rows[i].room_id,
                 "Viewer"
             ]);
@@ -78,12 +79,15 @@ exports.getRoomDetails = async (req,res,next) => {
             const [game] = await conn.execute('SELECT * FROM `games` where `room_id`=?',[
                 rows[i].room_id
             ]);
+
+            console.log("MAMAAA");
+            console.log("mama masii" + admin[0].username);
             if(game.length > 0){
                 // Insert the room's details  
                 result.push({
                     room_name:rows_room[0].room_name,
                     type:rows_room[0].type,
-                    admin_name:admin.username,
+                    admin_name:admin[0].username,
                     user_number:rows_room[0].current_users,
                     user_list:user_array,
                     game_name:game[0].game_name,
@@ -99,14 +103,13 @@ exports.getRoomDetails = async (req,res,next) => {
                 result.push({
                     room_name:rows_room[0].room_name,
                     type:rows_room[0].type,
-                    admin_name:admin.username,
+                    admin_name:admin[0].username,
                     user_number:rows_room[0].current_users,
                     user_list:user_array,
                     game_name:"No game in progress",
                     game_status:"-",
                     viewers_nr:rows_users.length,
-                    viewers_pts:viewerspts[0].viewer_points,
-                    max_players:game[0].max_players 
+                    viewers_pts:viewerspts[0].viewer_points
                 });                
             }
         }
